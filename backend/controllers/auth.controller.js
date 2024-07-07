@@ -85,4 +85,4 @@ export const logout = (req, res) => {
 		console.log("Error in logout controller", error.message);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
-};
+}; 
