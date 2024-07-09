@@ -1,35 +1,37 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import useGetMessages from "../../hooks/useGetMessages";
 import MessageSkeleton from "../skeletons/MessagesSkeleton";
 import Message from "./Message";
-import { useRef } from "react";
 import useListenMessages from "../../hooks/useListenMessages";
 
 const Messages = () => {
   const { messages, loading } = useGetMessages();
   useListenMessages();
-  const lastMessageRef = useRef();
+  const messagesEndRef = useRef(null);
+
   useEffect(() => {
-    setTimeout(() => {
-      lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   return (
     <div className="px-4 flex-1 overflow-auto">
-      {!loading &&
-        messages.length > 0 &&
+      {messages.length > 0 ? (
         messages.map((message) => (
-          <div key={message._id} ref={lastMessageRef}>
+          <div key={message._id}>
             <Message message={message} />
           </div>
-        ))}
-
-      {loading && [...Array(3)].map((_, idx) => <MessageSkeleton key={idx} />)}
-      {!loading && messages.length === 0 && (
+        ))
+      ) : loading ? (
+        [...Array(3)].map((_, idx) => <MessageSkeleton key={idx} />)
+      ) : (
         <p className="text-center">Send a message to start the conversation</p>
       )}
+
+      <div ref={messagesEndRef}></div>
     </div>
   );
 };
+
 export default Messages;
